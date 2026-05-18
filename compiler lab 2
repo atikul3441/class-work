@@ -1,0 +1,21 @@
+/*Definition Section*/
+%{
+int count = 0;
+%}
+
+/*Rule Section*/
+%%
+[A-Z] {printf("%s capital letter\n", yytext);
+       count++;}
+.     {printf("%s not a capital letter\n", yytext);}
+\n    {return 0;}
+%%
+
+/*Code Section*/
+int yywrap(){}
+int main()
+{
+yylex();
+printf("\nNumber of Capital letters %d\n", count);
+return 0;
+}
