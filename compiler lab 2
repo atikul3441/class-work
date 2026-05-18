@@ -1,21 +1,20 @@
+
 /*Definition Section*/
 %{
-int count = 0;
+
 %}
 
 /*Rule Section*/
-%%
-[A-Z] {printf("%s capital letter\n", yytext);
-       count++;}
-.     {printf("%s not a capital letter\n", yytext);}
-\n    {return 0;}
+ (JA-Za-z _I[A-Za-z _0-9]* {printf("%s a valid identifier\n", yytext);}
+. {printf("%5 not a valid identifier\n", yytext);}
+ \n
+(return 0;)
 %%
 
 /*Code Section*/
-int yywrap(){}
-int main()
-{
-yylex();
-printf("\nNumber of Capital letters %d\n", count);
-return 0;
-}
+ int yywrap()}
+ int main()
+(
+ yylex();
+ return 0;
+)
