@@ -1,20 +1,23 @@
-
-/*Definition Section*/
+/* Definition Section */
 %{
-
+#include <stdio.h>
 %}
 
-/*Rule Section*/
- (JA-Za-z _I[A-Za-z _0-9]* {printf("%s a valid identifier\n", yytext);}
-. {printf("%5 not a valid identifier\n", yytext);}
- \n
-(return 0;)
+/* Rule Section */
+%%
+[A-Za-z_][A-Za-z0-9_]*   { printf("%s is a valid identifier\n", yytext); }
+.                        { printf("%s is not a valid identifier\n", yytext); }
+\n                       { return 0; }
 %%
 
-/*Code Section*/
- int yywrap()}
- int main()
-(
- yylex();
- return 0;
-)
+/* Code Section */
+int yywrap()
+{
+    return 1;
+}
+
+int main()
+{
+    yylex();
+    return 0;
+}
