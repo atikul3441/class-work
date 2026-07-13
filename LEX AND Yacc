@@ -1,0 +1,125 @@
+তোমার LEX code আর YACC code আলাদা ফাইলে রাখতে হবে। একই .y ফাইলে দুটো একসঙ্গে দিলে কাজ করবে না।
+
+octal.l — LEX file
+
+%{
+#include "y.tab.h"
+%}
+
+%%
+
+[0-7]       {
+                yylval = yytext[0] - '0';
+                return DIGIT;
+            }
+
+[ \t]+      { /* Space এবং tab বাদ দেবে */ }
+
+\n          { return 0; }
+
+.           { return yytext[0]; }
+
+%%
+
+int yywrap(void)
+{
+    return 1;
+}
+
+
+
+২. octal.y — YACC file
+
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+int yylex(void);
+void yyerror(const char *message);
+%}
+
+%token DIGIT
+
+%start N
+
+%%
+
+N
+    : L
+      {
+          printf("Decimal Value: %d\n", $1);
+      }
+    ;
+
+L
+    : L D
+      {
+          $$ = ($1 * 8) + $2;
+      }
+    | D
+      {
+          $$ = $1;
+      }
+    ;
+
+D
+    : DIGIT
+      {
+          $$ = $1;
+      }
+    ;
+
+%%
+
+void yyerror(const char *message)
+{
+    printf("Invalid octal number!\n");
+}
+
+int main(void)
+{
+    printf("Enter an octal number (example: 17): ");
+
+    return yyparse();
+}
+
+
+
+৩. Compile করার command
+
+প্রথমে YACC চালাও:
+
+yacc -d octal.y
+
+তারপর FLEX চালাও:
+
+flex octal.l
+
+তারপর compile করো:
+
+gcc y.tab.c lex.yy.c -o octal -lfl
+
+Program চালাও:
+
+./octal
+Example
+Enter an octal number (example: 17): 17
+Decimal Value: 15
+
+কারণ:
+
+17 (Octal)
+= 1 × 8 + 7
+= 15 (Decimal)
+
+আরেকটি example:
+
+Enter an octal number (example: 17): 123
+Decimal Value: 83
+
+Invalid input দিলে:
+
+Enter an octal number (example: 17): 89
+Invalid octal number!
+
+কারণ octal number-এ শুধু 0 থেকে 7 পর্যন্ত digit থাকতে পারে।
